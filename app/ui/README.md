@@ -1,6 +1,6 @@
 # Frontend
 
-This is the frontend of the dialoqbase project.
+This is the frontend of the ChatBase project.
 
 ## Setup
 

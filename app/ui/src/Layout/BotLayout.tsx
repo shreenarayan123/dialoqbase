@@ -153,9 +153,9 @@ export default function BotLayout({
                     <img
                       className="h-8 w-auto"
                       src="/logo.png"
-                      alt="Dialoqbase"
+                      alt="ChatBase"
                     />
-                    <span className="ml-1 text-xl font-bold">Dialoqbase</span>
+                    <span className="ml-1 text-xl font-bold">ChatBase</span>
                     <span className="inline-block flex-shrink-0 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 ml-2">
                       {/* @ts-ignore */}
                       {`v${__APP_VERSION__}`}
@@ -223,8 +223,8 @@ export default function BotLayout({
               to="/"
               className="focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-700 flex items-center px-3 dark:text-white"
             >
-              <img className="h-8 w-auto" src="/logo.png" alt="Dialoqbase" />
-              <span className="ml-1 text-xl font-bold">Dialoqbase</span>
+              <img className="h-8 w-auto" src="/logo.png" alt="ChatBase" />
+              <span className="ml-1 text-xl font-bold">ChatBase</span>
               <span className="inline-block flex-shrink-0 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 ml-2">
                 {/* @ts-ignore */}
                 {`v${__APP_VERSION__}`}

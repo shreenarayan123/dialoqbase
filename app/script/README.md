@@ -1,3 +1,3 @@
 # Script 
 
-Chatbox embedding script for dialoqbase.
+Chatbox embedding script for Chatbase.

@@ -42,10 +42,10 @@ export default function DashboardLayout({
                     <img
                       className="h-8 w-auto"
                       src="/logo.png"
-                      alt="Dialoqbase"
+                      alt="ChatBase"
                     />
                     <span className="ml-1 text-xl font-bold dark:text-white">
-                      Dialoqbase
+                      ChatBase
                     </span>
                     <span className="inline-block flex-shrink-0 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 ml-2">
                       {/* @ts-ignore */}
