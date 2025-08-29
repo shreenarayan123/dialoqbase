@@ -63,7 +63,7 @@ COPY --from=build /app/app/widget/dist/index.html ./public/bot.html
 COPY --from=build /app/app/script/dist/chat.min.js ./public/chat.min.js 
 
 # Install production dependencies
-RUN yarn config set registry https://registry.npmjs.org/ && \
+RUN yarn config set registry https://registry.npmmirror.com/ && \
     yarn config set network-timeout 1200000 && \
     yarn install --production --frozen-lockfile
 
