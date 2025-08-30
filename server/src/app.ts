@@ -77,48 +77,55 @@ const app: FastifyPluginAsync<AppOptions> = async (
   });
 
   await fastify.register(import("fastify-raw-body"), {
-    field: "rawBody", // change the default request.rawBody property name
-    global: false, // add the rawBody to every request. **Default true**
-    encoding: "utf8", // set it to false to set rawBody as a Buffer **Default utf8**
-    runFirst: true, // get the body before any preParsing hook change/uncompress it. **Default false**
-    routes: [], // array of routes, **`global`** will be ignored, wildcard routes not supported
+    field: "rawBody",
+    global: false,
+    encoding: "utf8",
+    runFirst: true,
+    routes: [],
+  });
+
+  // Move Worker and CronJob initialization inside the plugin
+  const redis_url = process.env.DB_REDIS_URL || process.env.REDIS_URL;
+  if (!redis_url) {
+    throw new Error("Redis url is not defined");
+  }
+
+  const { host, port, password } = parseRedisUrl(redis_url);
+  const path = join(__dirname, "./queue/index.js");
+  const workerUrl = pathToFileURL(path);
+  const concurrency = parseInt(process.env.DB_QUEUE_CONCURRENCY || "1");
+  const workerThreads = process.env.DB_QUEUE_THREADS || "false";
+  
+  const worker = new Worker("vector", workerUrl, {
+    connection: {
+      host,
+      port,
+      password,
+      username: process?.env?.DB_REDIS_USERNAME,
+    },
+    concurrency,
+    useWorkerThreads: workerThreads === "true",
+  });
+
+  const job = new CronJob(
+    process.env.DB_CRON_TIME || '0 0 0 * * *',
+    processDatasourceCron,
+    null,
+    true,
+    process.env.DB_CRON_TIMEZONE
+  );
+
+  // Handle graceful shutdown
+  fastify.addHook('onClose', async () => {
+    await worker.close();
+    job.stop();
+  });
+
+  process.on("SIGINT", async () => {
+    await fastify.close();
+    process.exit();
   });
 };
-
-const redis_url = process.env.DB_REDIS_URL || process.env.REDIS_URL;
-if (!redis_url) {
-  throw new Error("Redis url is not defined");
-}
-
-const { host, port, password } = parseRedisUrl(redis_url);
-const path = join(__dirname, "./queue/index.js");
-const workerUrl = pathToFileURL(path);
-const concurrency = parseInt(process.env.DB_QUEUE_CONCURRENCY || "1");
-const workerThreads = process.env.DB_QUEUE_THREADS || "false";
-const worker = new Worker("vector", workerUrl, {
-  connection: {
-    host,
-    port,
-    password,
-    username: process?.env?.DB_REDIS_USERNAME,
-  },
-  concurrency,
-  useWorkerThreads: workerThreads === "true",
-});
-
-const job = new CronJob(
-  process.env.DB_CRON_TIME || '0 0 0 * * *',
-  processDatasourceCron,
-  null,
-  true,
-  process.env.DB_CRON_TIMEZONE
-);
-
-process.on("SIGINT", async () => {
-  await worker.close();
-  job.stop();
-  process.exit();
-});
 
 export default app;
 export { app, options };
