@@ -125,6 +125,16 @@ const app: FastifyPluginAsync<AppOptions> = async (
     await fastify.close();
     process.exit();
   });
+
+  fastify.ready(() => {
+  const port = parseInt(process.env.PORT || '3000');
+  fastify.listen({ port, host: '0.0.0.0' }, (err) => {
+    if (err) {
+      fastify.log.error(err);
+      process.exit(1);
+    }
+  });
+});
 };
 
 export default app;
