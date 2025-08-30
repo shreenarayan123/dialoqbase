@@ -11,7 +11,7 @@
   "start:test": "npm run build && fastify start dist/app.js",
   "start": "npm run build && npx prisma migrate deploy && npx prisma db seed && fastify start -a 0.0.0.0 -p $PORT dist/app.js",
   "seed": "npx prisma db seed",
-  "build": "tsc",
+  "build": "tsc -p tsconfig.json",
   "db": "prisma generate",
   "watch:ts": "tsc -w",
   "queue": "node dist/queue.js",
