@@ -14,6 +14,8 @@ const bullPlugin: FastifyPluginAsync = fp(async (server, options) => {
     throw new Error("Redis url is not defined");
   }
 
+  console.log('Connecting to Redis for Bull queue...');
+  
   server.decorate("queue", queue);
 
   server.addHook("onClose", () => {
