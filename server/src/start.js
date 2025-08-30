@@ -1,4 +1,4 @@
-import app from "./server/src/app"
+import app from './app.js';
 
 const start = async () => {
   try {
