@@ -9,7 +9,7 @@
   "scripts": {
     "test": "npm run build:ts && tsc -p test/tsconfig.json && tap --ts \"test/**/*.test.ts\"",
     "start:test": "npm run build:ts && fastify start  dist/app.js",
-    "start": "npx prisma migrate deploy && npx prisma db seed && npm run build:ts && node dist/start.js",
+    "start": "npx prisma migrate deploy && npx prisma db seed && fastify start app.js",
     "seed": "npx prisma db seed",
     "build:ts": "tsc && copyfiles -u 1 \"src/**/*.js \" dist",
     "build": "tsc && copyfiles -u 1 \"src/**/*.js \" dist",

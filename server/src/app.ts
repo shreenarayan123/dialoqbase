@@ -90,49 +90,33 @@ if (!redis_url) {
   throw new Error("Redis url is not defined");
 }
 
-// Initialize worker and cron job only after server starts
-let worker: Worker;
-let job: CronJob;
-
-// Function to initialize background services
-export const initializeBackgroundServices = () => {
-  const { host, port, password } = parseRedisUrl(redis_url);
-  const path = join(__dirname, "./queue/index.js");
-  const workerUrl = pathToFileURL(path);
-  const concurrency = parseInt(process.env.DB_QUEUE_CONCURRENCY || "1");
-  const workerThreads = process.env.DB_QUEUE_THREADS || "false";
-  
-  worker = new Worker("vector", workerUrl, {
-    connection: {
-      host,
-      port,
-      password,
-      username: process?.env?.DB_REDIS_USERNAME,
-    },
-    concurrency,
-    useWorkerThreads: workerThreads === "true",
-  });
-
-  job = new CronJob(
-    process.env.DB_CRON_TIME || '0 0 0 * * *',
-    processDatasourceCron,
-    null,
-    true,
-    process.env.DB_CRON_TIMEZONE
-  );
-
-  console.log('Background services initialized');
-};
-
-process.on("SIGINT", async () => {
-  if (worker) await worker.close();
-  if (job) job.stop();
-  process.exit();
+const { host, port, password } = parseRedisUrl(redis_url);
+const path = join(__dirname, "./queue/index.js");
+const workerUrl = pathToFileURL(path);
+const concurrency = parseInt(process.env.DB_QUEUE_CONCURRENCY || "1");
+const workerThreads = process.env.DB_QUEUE_THREADS || "false";
+const worker = new Worker("vector", workerUrl, {
+  connection: {
+    host,
+    port,
+    password,
+    username: process?.env?.DB_REDIS_USERNAME,
+  },
+  concurrency,
+  useWorkerThreads: workerThreads === "true",
 });
 
-process.on("SIGTERM", async () => {
-  if (worker) await worker.close();
-  if (job) job.stop();
+const job = new CronJob(
+  process.env.DB_CRON_TIME || '0 0 0 * * *',
+  processDatasourceCron,
+  null,
+  true,
+  process.env.DB_CRON_TIMEZONE
+);
+
+process.on("SIGINT", async () => {
+  await worker.close();
+  job.stop();
   process.exit();
 });
 
